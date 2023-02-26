@@ -1,24 +1,20 @@
 #Imports
-import tkinter as tk
-import customtkinter as ctk
-#from pytube import YouTube as yt
-import yt_dlp
-import urllib.request
-from PIL import Image, ImageTk
-from io import BytesIO
-import threading
-import time
+import tkinter as tk #GUI
+import customtkinter as ctk #Custom Widgets for GUI
+import yt_dlp #Youtube API
+import urllib.request #Working with URL's
+from PIL import Image, ImageTk #Image editing
 
 #Settings
 ctk.set_appearance_mode("System")
 ctk.set_default_color_theme("dark-blue")
 
-#New Code
+
 class App:
     def __init__(self, master):
         self.master = master
         self.master.geometry("720x480")
-        self.master.resizable(False, False)
+        ##self.master.resizable(False, False)
         self.master.title("DwnTube")
 
         #Create a Label widget
@@ -44,17 +40,16 @@ class App:
         self.lblThumbnail = ctk.CTkLabel(self.master, text="")
         self.lblThumbnail.place(x=20, y=560)
 
-        self.lblDescription = ctk.CTkLabel(self.master, text="")
-        self.lblThumbnail = ctk.CTkLabel(self.master, text="")
-        self.lblThumbnail.place(x=20, y=560)
+        self.lblDescription = ctk.CTkLabel(self.master, text="test")
+        self.lblDescription.place(x=20, y = 800)
     
 
     def btnCont_onClick(self):
-        self.get_video_title()
+        #self.get_video_info()
         self.animateUp()
 
 
-    def get_video_title(self):
+    def get_video_info(self):
         # Set the video URL
         video_url = self.entLink.get()
         # Create a yt-dlp object
@@ -87,12 +82,14 @@ class App:
             self.lblTitle.place(y=480-i*10)
             self.lblChannel.place(y=510-i*10)
             self.lblThumbnail.place(y=560-i*10)
+            self.lblDescription.place(y=760-i*10)
             self.master.update()
             self.master.after(20)
         for i in range(20):
             self.lblTitle.place(y=240-i*10)
             self.lblChannel.place(y=270-i*10)
             self.lblThumbnail.place(y=320-i*10)
+            self.lblDescription.place(y=520-i*10)
             self.master.update()
             self.master.after(20)
 
@@ -102,68 +99,3 @@ app = App(root)
 
 # Start the main event loop
 root.mainloop()
-
-
-#Old Code
-##Settings
-#ctk.set_appearance_mode("System")
-#ctk.set_default_color_theme("dark-blue")    ###
-#
-##Functions
-#def download():
-#    try:
-#        ytLink = entLink.get()
-#        ytObj = yt(ytLink, on_progress_callback=progress)
-#        ytVid = ytObj.streams.get_highest_resolution()
-#        
-#        # create a new thread to download the video
-#        download_thread = threading.Thread(target=ytVid.download)
-#        download_thread.start()
-#        
-#        lblStatus.configure(text="Downloading...")
-#        
-#        # check the download progress every 500 milliseconds
-#        while download_thread.is_alive():
-#            pbDownload.update()
-#            root.update()
-#            time.sleep(0.5)
-#            lblStatus.update()
-#            
-#        lblStatus.configure(text="Finished Downloading")
-#    except:
-#        print("Not a valid link!")
-#        lblStatus.configure(text="Not a Valid Link")
-#
-#
-#def progress(stream, chunk, bytes_remaining):
-#    size = stream.filesize
-#    bytesDownloaded = size - bytes_remaining
-#    percentage = bytesDownloaded / size
-#    pbDownload.set(percentage)
-#    per = str(int(percentage*100))
-#    lblStatus.configure(text="Downloading..."+per+'%')
-#
-##GUI
-#root = ctk.CTk()
-#root.geometry("720x480")
-#root.title("DwnTube")
-#
-#lblTitle = ctk.CTkLabel(root, text="Insert a YouTube link:")
-#lblTitle.pack()
-#
-#ytUrl = tk.StringVar()
-#entLink = ctk.CTkEntry(root, width=400, textvariable=ytUrl)
-#entLink.pack()
-#
-#lblStatus = ctk.CTkLabel(root, text="")
-#lblStatus.pack()
-#
-#pbDownload = ctk.CTkProgressBar(root, width=400)
-#pbDownload.set(0)
-#pbDownload.pack() 
-#
-#btnDownload = ctk.CTkButton(root, text="Download Video", command=download)
-#btnDownload.pack()
-#
-##Show
-#root.mainloop()
