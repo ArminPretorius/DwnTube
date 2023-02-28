@@ -4,6 +4,7 @@ import customtkinter as ctk #Custom Widgets for GUI
 import yt_dlp #Youtube API
 import urllib.request #Working with URL's
 from PIL import Image, ImageTk #Image editing
+import pytube
 
 #Settings
 ctk.set_appearance_mode("System")
@@ -123,29 +124,7 @@ class App:
                 rbRes = ctk.CTkRadioButton(self.frmRes, text=resolution, variable=selected_resolution, value=format.get("format_id"), width=325)
                 rbRes.pack()
     def download_video(self):
-        yt_dlp.YoutubeDL({'format': "140"}).download([video_url])
-        
-        ## Format code for the video you want to download
-        #format_code = selected_resolution.get()
-        #info_dict = video_info
-        ## Get the format info for the selected format
-        #format_info = next(
-        #    (f for f in info_dict["formats"] if f["format_id"] == format_code), None
-        #)
-        ## Display all info about the selected video and format
-        #for key, value in format_info.items():
-        #    print(f"{key}: {value}")
-
-        #for format in info_dict["formats"]:
-        #    print(f"Format ID: {format['format_id']}")
-        #    for key, value in format.items():
-        #        print(f"  {key}: {value}")
-        #
-        #for format in info_dict["formats"]:
-        #    if "video" in format["format_note"].lower():
-        #        print(f"Format ID: {format['format_id']}")
-        #        for key, value in format.items():
-        #            print(f"  {key}: {value}")
+        yt_dlp.YoutubeDL({'format': "17"}).download([video_url])
 
 # Create the cTkinter application
 root = ctk.CTk()
