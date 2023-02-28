@@ -11,32 +11,42 @@ ctk.set_default_color_theme("dark-blue")
 
 
 class App:
+    
     def __init__(self, master):
+        #Set Up Form
         self.master = master
         self.master.geometry("720x480")
         self.master.resizable(False, False)
         self.master.title("DwnTube")
-
-        #Create a Label widget
+        #Load Widgets
+        self.loadMainGUI()
+        self.loadYoutubeInfo()
+        self.loadVideoInfo()
+    def loadMainGUI(self):
         self.lblLink = ctk.CTkLabel(self.master, width= 500, text="Enter a Youtube Link:", font=("Montserrat", 16))
         self.lblLink.place(x=110, y=200)
 
-        # Create an Entry widget
         self.entLink = ctk.CTkEntry(self.master, width= 400)
         self.entLink.place(x=110, y=240)
 
-        # Create a button to trigger the animation
         self.btnCont = ctk.CTkButton(self.master, text="->", width=100, command=self.btnCont_onClick)
         self.btnCont.place(x=510, y=240)
+    def loadVideoInfo(self):
+        self.frmRes = ctk.CTkFrame(self.frmDownload, width= 325, height= 300)
+        self.frmRes.place(x= 10, y= 10)
 
+        self.txtDescription = ctk.CTkTextbox(self.frmInfo, wrap=tk.WORD, width= 325, height=140)
+        self.txtDescription.place(x=10, y = 200)
+
+        self.btnDownload = ctk.CTkButton(self.frmDownload, text="Download", command=self.download_video)
+        self.btnDownload.place(x=100, y=310)
+    def loadYoutubeInfo(self):
         self.frmTitle = ctk.CTkFrame(self.master, width= 700, height = 60)
         self.frmTitle.place(x=10, y=490)
 
-        # Title Label
         self.lblTitle = ctk.CTkLabel(self.frmTitle, width= 500, font=("Montserrat", 16))
         self.lblTitle.place(x=100, y=5)
 
-        # Channel Label
         self.lblChannel = ctk.CTkLabel(self.frmTitle, width= 500, font=("Montserrat", 12))
         self.lblChannel.place(x=100, y=30)
 
@@ -46,30 +56,38 @@ class App:
         self.frmDownload = ctk.CTkFrame(self.master, width= 345, height= 350)
         self.frmDownload.place(x= 365, y= 520)
 
-        self.frmRes = ctk.CTkFrame(self.frmDownload, width= 325, height= 300)
-        self.frmRes.place(x= 10, y= 10)
-
         self.lblThumbnail = ctk.CTkLabel(self.frmInfo, text="")
         self.lblThumbnail.place(x=10, y=10)
 
-        self.txtDescription = ctk.CTkTextbox(self.frmInfo, wrap=tk.WORD, width= 325, height=140)
-        self.txtDescription.place(x=10, y = 200)
-
-        self.btnDownload = ctk.CTkButton(self.frmDownload, text="Download", command=self.download_video)
-        self.btnDownload.place(x=100, y=310)
-
     def btnCont_onClick(self):
-        self.get_video_info()
+        self.get_yt_video_info()
         self.animateUp()
 
-
-    def get_video_info(self):
+    def animateUp(self):
+        # Move the widgets upward
+        for i in range(24):
+            self.lblLink.place(y=200-i*10)
+            self.entLink.place(y=240-i*10)
+            self.btnCont.place(y=240-i*10)
+            self.frmTitle.place(y=480-i*10)
+            self.frmInfo.place(y=550-i*10)
+            self.frmDownload.place(y=550-i*10)
+            self.master.update()
+            self.master.after(20)
+        for i in range(20):
+            self.frmTitle.place(y=240-i*10)
+            self.frmInfo.place(y=310-i*10)
+            self.frmDownload.place(y=310-i*10)
+            self.master.update()
+            self.master.after(20)
+    def get_yt_video_info(self):
         # Set the video URL
         global video_url
         video_url = self.entLink.get()
         # Create a yt-dlp object
         ydl = yt_dlp.YoutubeDL()
         # Extract the video information
+        global video_info
         video_info = ydl.extract_info(video_url, download=False)
         # Get the video title
         video_title = video_info.get('title', None)
@@ -104,28 +122,30 @@ class App:
                 unique_resolutions.add(resolution)
                 rbRes = ctk.CTkRadioButton(self.frmRes, text=resolution, variable=selected_resolution, value=format.get("format_id"), width=325)
                 rbRes.pack()
-
-    def animateUp(self):
-        # Move the widgets upward
-        for i in range(24):
-            self.lblLink.place(y=200-i*10)
-            self.entLink.place(y=240-i*10)
-            self.btnCont.place(y=240-i*10)
-            self.frmTitle.place(y=480-i*10)
-            self.frmInfo.place(y=550-i*10)
-            self.frmDownload.place(y=550-i*10)
-            self.master.update()
-            self.master.after(20)
-        for i in range(20):
-            self.frmTitle.place(y=240-i*10)
-            self.frmInfo.place(y=310-i*10)
-            self.frmDownload.place(y=310-i*10)
-            self.master.update()
-            self.master.after(20)
-
     def download_video(self):
-        yt_dlp.YoutubeDL({'format': selected_resolution.get()}).download([video_url])
+        yt_dlp.YoutubeDL({'format': "140"}).download([video_url])
+        
+        ## Format code for the video you want to download
+        #format_code = selected_resolution.get()
+        #info_dict = video_info
+        ## Get the format info for the selected format
+        #format_info = next(
+        #    (f for f in info_dict["formats"] if f["format_id"] == format_code), None
+        #)
+        ## Display all info about the selected video and format
+        #for key, value in format_info.items():
+        #    print(f"{key}: {value}")
 
+        #for format in info_dict["formats"]:
+        #    print(f"Format ID: {format['format_id']}")
+        #    for key, value in format.items():
+        #        print(f"  {key}: {value}")
+        #
+        #for format in info_dict["formats"]:
+        #    if "video" in format["format_note"].lower():
+        #        print(f"Format ID: {format['format_id']}")
+        #        for key, value in format.items():
+        #            print(f"  {key}: {value}")
 
 # Create the cTkinter application
 root = ctk.CTk()
