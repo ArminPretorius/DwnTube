@@ -46,13 +46,16 @@ class App:
         self.frmDownload = ctk.CTkFrame(self.master, width= 345, height= 350)
         self.frmDownload.place(x= 365, y= 520)
 
+        self.frmRes = ctk.CTkFrame(self.frmDownload, width= 325, height= 300)
+        self.frmRes.place(x= 10, y= 10)
+
         self.lblThumbnail = ctk.CTkLabel(self.frmInfo, text="")
         self.lblThumbnail.place(x=10, y=10)
 
-        self.lblDescription = ctk.CTkLabel(self.frmInfo, text="", wraplength=325, justify="left")
-        self.lblDescription.place(x=10, y = 190)
+        self.txtDescription = ctk.CTkTextbox(self.frmInfo, wrap=tk.WORD, width= 325, height=140)
+        self.txtDescription.place(x=10, y = 200)
 
-        self.btnDownload = ctk.CTkButton(self.frmDownload, text="Download", command=print("You clicked download"))
+        self.btnDownload = ctk.CTkButton(self.frmDownload, text="Download", command=self.download_video)
         self.btnDownload.place(x=100, y=310)
 
     def btnCont_onClick(self):
@@ -62,6 +65,7 @@ class App:
 
     def get_video_info(self):
         # Set the video URL
+        global video_url
         video_url = self.entLink.get()
         # Create a yt-dlp object
         ydl = yt_dlp.YoutubeDL()
@@ -74,7 +78,7 @@ class App:
         channel_name = video_info.get('channel', None)
         # Print the video title
         self.lblTitle.configure(text=video_title)
-        self.lblDescription.configure(text=video_description)
+        self.txtDescription.insert(tk.END, video_description)
         self.lblChannel.configure(text="By: "+channel_name)
         # Download thumbnail image using urllib
         with urllib.request.urlopen(video_thumbnail) as url:
@@ -82,6 +86,24 @@ class App:
         # Convert thumbnail image to Tkinter-compatible format
         thumbnail_tk = ImageTk.PhotoImage((thumbnail_image).resize((320,180),Image.Resampling.NEAREST))
         self.lblThumbnail.configure(image=thumbnail_tk)
+        formats = video_info.get("formats", [])
+
+        global selected_resolution 
+        selected_resolution = tk.StringVar()
+        unique_resolutions = set()
+        
+        for format in formats:
+            if format.get("acodec") != "none":
+                rbRes = ctk.CTkRadioButton(self.frmRes, text="Audio Only", variable=selected_resolution, value=format.get("format_id"), width=325)
+                unique_resolutions.add("audio only")
+                rbRes.pack()
+                break
+        for format in formats:
+            resolution = format.get("resolution","Unknown")
+            if resolution not in unique_resolutions:
+                unique_resolutions.add(resolution)
+                rbRes = ctk.CTkRadioButton(self.frmRes, text=resolution, variable=selected_resolution, value=format.get("format_id"), width=325)
+                rbRes.pack()
 
     def animateUp(self):
         # Move the widgets upward
@@ -100,6 +122,10 @@ class App:
             self.frmDownload.place(y=310-i*10)
             self.master.update()
             self.master.after(20)
+
+    def download_video(self):
+        yt_dlp.YoutubeDL({'format': selected_resolution.get()}).download([video_url])
+
 
 # Create the cTkinter application
 root = ctk.CTk()
